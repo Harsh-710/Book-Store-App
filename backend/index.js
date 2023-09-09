@@ -1,29 +1,38 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import cors from 'cors';
+import 'express-async-errors';
 import helmet from 'helmet';
 import xss from 'xss';
 import dotenv from 'dotenv';
 dotenv.config();
 
 import {connectDB} from './db/connect.js';
+import booksRoute from './routes/booksRoute.js';
 
 const app = express();
 
-// app.use(express.json());
-// app.use(cors());
-// app.use(helmet());
-// app.use(xss());
+// middlewares 
+// for parsing req body
+app.use(express.json());
 
+// for security
+app.use(cors());
+
+
+// routes
+// home route
 app.get('/', (req, res) => {
-  res.send('Hello to Book Store');
+  res.send('Book Store App');
 });
+
+// books route
+app.use('/books', booksRoute);
+
 
 const PORT = process.env.PORT || 5000;
 
 const start = async () => {
     try{
-        console.log(process.env.MONGO_URI)
         await connectDB(process.env.MONGO_URI);
         app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
     }
