@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import 'express-async-errors';
 import helmet from 'helmet';
-import xss from 'xss';
+import xss from 'xss-clean';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -17,6 +17,8 @@ app.use(express.json());
 
 // for security
 app.use(cors());
+app.use(xss());
+app.use(helmet());
 
 
 // routes
