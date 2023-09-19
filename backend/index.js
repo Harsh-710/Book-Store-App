@@ -24,7 +24,7 @@ app.use(helmet());
 // routes
 // home route
 app.get('/', (req, res) => {
-  res.send('Book Store App');
+  res.send('Book Store API');
 });
 
 // books route
