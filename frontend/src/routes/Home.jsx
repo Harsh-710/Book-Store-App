@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import Spinner from "../components/Spinner";
 import { Link } from "react-router-dom";
 import { MdOutlineAddBox } from "react-icons/md";
-import BooksTable from "../components/home/BooksTable";
-import BooksCard from "../components/home/BooksCard";
+import BooksTable from "../components/Home/BooksTable";
+import BooksCard from "../components/Home/BooksCard";
 import api from '../api.js'
 
 const Home = () => {
