@@ -1,88 +1,65 @@
 import Express from "express";
 import { Book } from '../models/booksModel.js'
+import { StatusCodes } from "http-status-codes";
+import { BadRequestError, NotFoundError } from "../errors/index.js";
 
 const router = Express.Router();
 
-// to save new book
-router.post('/', async (req, res) => {
-    try{
-        if(!req.body.title || !req.body.author || !req.body.publishYear){
-            return res.status(400).send({ message : "Please fill all fields" });
-        }
-        const book = await Book.create({
-            title : req.body.title,
-            author : req.body.author,
-            publishYear : req.body.publishYear,
-        });
-        return res.status(201).send(book);
-    }
-    catch(error){
-        console.log(error);
-        res.status(500).send({ message : error.message });
-    }
-});
 
-// to get all books
+// get all books
 router.get('/', async (req,res) => {
-    try{
-        const books = await Book.find({});
-        return res.status(200).json({
-            count : books.length,
-            data : books,
-        });
-    }
-    catch(error){
-        console.log(error);
-        return res.status(500).send({ message : error.message });
-    }
+    const books = await Book.find({ createdBy : req.user.userId }).sort('createdAt');
+    return res.status(StatusCodes.OK).json({ books, count : books.length });
 });
 
-// to get single book
+
+// get a single book
 router.get('/:id', async (req,res) => {
-    try{
-        const id = req.params.id;
-        const book = await Book.findById(id);
-        return res.status(200).json(book);
+    // check for both book and its user
+    const book = await Book.findOne({ _id : req.params.id, createdBy : req.user.userId });
+    if(!book){
+        throw new NotFoundError(`No book found with id : ${req.params.id}`);
     }
-    catch(error){
-        console.log(error);
-        return res.status(500).send({ message : error.message });
-    }
+    return res.status(StatusCodes.OK).json({ book });
 });
 
-// to update book
-router.put('/:id', async (req,res) => {
-    try{
-        if(!req.body.title || !req.body.author || !req.body.publishYear){
-            return res.status(400).send({ message : "Please fill all fields" });
-        }
-        const id = req.params.id;
-        const result = await Book.findByIdAndUpdate(id, req.body);
-        if(!result){
-            return res.status(404).json({ message : "Book not found"});
-        }
-        return res.status(200).json({ message : "Book updated successfully"});
-    }
-    catch(error){
-        console.log(error);
-        res.status(500).send({ message : error.message });
-    }
+
+// create a new book
+router.post('/', async (req, res) => {
+    req.body.createdBy = req.user.userId;
+    const book = await Book.create(req.body);
+    return res.status(StatusCodes.CREATED).json({ book });
 });
 
-// to delete book
+
+// update a book
+router.patch('/:id', async (req,res) => {
+    const {
+        body : { title, author },
+        params : { id },
+        user : { userId }
+    } = req;
+    if(title === '' || author === ''){
+        throw new BadRequestError('Title and Author fields cannot be empty');
+    }
+    const book = await Book.findByIdAndUpdate(
+        { _id : id, createdBy : userId },
+        req.body,
+        { new : true, runvalidators : true }
+    )
+    if(!book){
+        throw new NotFoundError(`No book found with id : ${id}`);
+    }
+    return res.status(StatusCodes.OK).json({ book });
+});
+
+// delete a book
 router.delete('/:id', async (req,res) => {
-    try{
-        const id = req.params.id;
-        const result = await Book.findByIdAndDelete(id);
-        if(!result){
-            return res.status(404).json({ message : "Book not found"});
-        }
-        return res.status(200).json({ message : "Book deleted successfully"});
+    const book = await Book.findByIdAndDelete({ _id : req.params.id, createdBy : req.user.userId });
+    if(!book){
+        throw new NotFoundError(`No book found with id : ${req.params.id}`);
     }
-    catch(error){
-        console.log(error);
-        res.status(500).send({ message : error.message });
-    }
+    return res.status(StatusCodes.OK).json({ msg : `Book deleted successfully` });
 });
 
 export default router;

@@ -7,28 +7,35 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import {connectDB} from './db/connect.js';
-import booksRoute from './routes/booksRoute.js';
 
 const app = express();
 
-// middlewares 
-// for parsing req body
+import booksRoute from './routes/booksRoute.js';
+import userRoute from './routes/userRoute.js';
+
+import authenticateUser from './middleware/authentication.js';
+import notFoundMiddleware from './middleware/not_found.js';
+import errorHandlerMiddleware from './middleware/error_handler.js';
+
+
 app.use(express.json());
 
 // for security
+app.use(helmet());
 app.use(cors());
 app.use(xss());
-app.use(helmet());
 
 
 // routes
-// home route
 app.get('/', (req, res) => {
   res.send('Book Store API');
 });
 
-// books route
-app.use('/books', booksRoute);
+app.use('/books', authenticateUser, booksRoute);
+app.use('/user', userRoute);
+
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
 
 
 const PORT = process.env.PORT || 5000;
