@@ -1,7 +1,18 @@
 import axios from 'axios';
 
-const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,   // The API (backend) URL
+const api = axios.create({
+  // baseURL: 'https://book-store-api-pn71.onrender.com',   // The API (backend) URL
+  baseURL: 'http://localhost:5000',
 });
 
-export default instance;
+api.interceptors.request.use(function (req) {
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    req.headers.authorization = `Bearer ${token}`;
+  }
+
+  return req;
+});
+
+export default api;

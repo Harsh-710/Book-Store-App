@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import BackButton from "../components/BackButton";
 import Spinner from "../components/Spinner";
-import api from '../api'
 import { useNavigate, useParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import api from "../api";
 
 const EditBook = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
-  const [publishYear, setPublishYear] = useState("");
+  // const [boughtOn, setBoughtOn] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -19,14 +19,14 @@ const EditBook = () => {
     api
       .get(`/books/${id}`)
       .then((response) => {
-        setAuthor(response.data.author);
-        setPublishYear(response.data.publishYear);
-        setTitle(response.data.title);
+        setAuthor(response.data.book.author);
+        // setBoughtOn(response.data.book.boughtOn);
+        setTitle(response.data.book.title);
         setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
-        alert("An error happened. Please check console");
+        alert("An error occurred. Try again later.")
         console.log(error);
       });
   }, []);
@@ -35,15 +35,15 @@ const EditBook = () => {
     const data = {
       title,
       author,
-      publishYear,
+      // boughtOn,
     };
     setLoading(true);
     api
-      .put(`/books/${id}`, data)
+      .patch(`/books/${id}`, data)
       .then(() => {
         setLoading(false);
         enqueueSnackbar("Book Edited successfully", { variant: "success" });
-        navigate("/");
+        navigate("/books");
       })
       .catch((error) => {
         setLoading(false);
@@ -76,15 +76,15 @@ const EditBook = () => {
             className="border-2 border-gray-500 px-4 py-2  w-full "
           />
         </div>
-        <div className="my-4">
-          <label className="text-xl mr-4 text-gray-500">Publish Year</label>
+        {/* <div className="my-4">
+          <label className="text-xl mr-4 text-gray-500">Purchase Date</label>
           <input
-            type="number"
-            value={publishYear}
-            onChange={(e) => setPublishYear(e.target.value)}
-            className="border-2 border-gray-500 px-4 py-2  w-full "
+            type={Date}
+            value={ new Date(boughtOn).toLocaleDateString() }
+            onChange={(e) => setBoughtOn(new Date(e.target.value))}
+            className="border-2 border-gray-500 px-4 py-2  w-full"
           />
-        </div>
+        </div> */}
         <button className="p-2 bg-sky-300 m-8" onClick={handleEditBook}>
           Save
         </button>
