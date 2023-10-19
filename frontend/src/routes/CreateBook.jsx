@@ -8,7 +8,7 @@ import api from "../api";
 const CreateBooks = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
-  const [boughtOn, setBoughtOn] = useState(new Date);
+  const [boughtOn, setBoughtOn] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
