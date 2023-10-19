@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import BackButton from "../components/BackButton";
 import Spinner from "../components/Spinner";
-import api from '../api'
 import { useNavigate, useParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import api from "../api";
 
 const DeleteBook = () => {
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,7 @@ const DeleteBook = () => {
       .then(() => {
         setLoading(false);
         enqueueSnackbar("Book Deleted successfully", { variant: "success" });
-        navigate("/");
+        navigate("/books");
       })
       .catch((error) => {
         setLoading(false);
