@@ -5,6 +5,7 @@ import { MdOutlineAddBox, MdExitToApp } from "react-icons/md";
 import BooksTable from "../components/Home/BooksTable";
 import BooksCard from "../components/Home/BooksCard";
 import api from "../api";
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const Books = () => {
   const [books, setBooks] = useState([]);
@@ -26,7 +27,7 @@ const Books = () => {
   }, []);
 
   return (
-    <div className="p-4">
+    <div className="p-7 m-7">
       <div className="flex justify-center items-center gap-x-4">
         <button
           className="bg-sky-300 hover:bg-sky-600 px-4 py-1 rounded-lg"
@@ -44,12 +45,14 @@ const Books = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl my-8">Books List</h1>
         <div className="flex">
-          <Link to="/books/create">
-            <MdOutlineAddBox className="text-sky-800 text-4xl" />
+          <Link to="/books/create" data-tooltip-id="tooltip" data-tooltip-content="New Entry">
+            <MdOutlineAddBox className="text-sky-800 m-2 text-4xl hover:text-sky-500 hover:scale-110 transition-all duration-300" />
           </Link>
-          <Link to="/">
-            <MdExitToApp className="text-sky-800 text-4xl" onClick= {() => localStorage.removeItem('token')} />
+          <ReactTooltip id="tooltip" place="bottom" type="dark" effect="solid" />
+          <Link to="/" data-tooltip-id="tooltip" data-tooltip-content="Logout">
+            <MdExitToApp className="text-sky-800 m-2 text-4xl hover:text-sky-500 hover:scale-110 transition-all duration-300" onClick= {() => localStorage.removeItem('token')} />
           </Link>
+          <ReactTooltip id="tooltip" place="bottom" type="dark" effect="solid" />
         </div>
       </div>
       {loading ? (
